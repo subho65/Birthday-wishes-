@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Wish Generator</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- QRCode.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #8a2be2;
+      --primary-hover: #7212cc;
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #1e1b4b, var(--bg-dark));
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #8a2be2, #ec4899);
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.95;
+      transform: translateY(-2px);
+    }
+
+    /* Output Section */
+    .output-section {
+      display: none;
+      margin-top: 30px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    #qrcode {
+      display: inline-block;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      margin: 15px 0;
+    }
+
+    #qrcode img, #qrcode canvas {
+      margin: 0 auto;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1><i class="fa-solid fa-cake-candles"></i> Wish Generator</h1>
+    
+    <form id="wishForm">
+      <div class="form-group">
+        <label for="name">Birthday Person's Name</label>
+        <input type="text" id="name" placeholder="e.g. John Doe" required>
+      </div>
+
+      <div class="form-group">
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob" required>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Personalized Message</label>
+        <textarea id="message" placeholder="Write a warm birthday note..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="image">Photo URL (Optional)</label>
+        <input type="url" id="image" placeholder="https://example.com/photo.jpg">
+      </div>
+
+      <button type="submit" class="btn"><i class="fa-solid fa-qrcode"></i> Generate QR Code</button>
+    </form>
+
+    <div class="output-section" id="outputSection">
+      <h3>Your QR Code is Ready!</h3>
+      <div id="qrcode"></div>
+      
+      <div class="action-buttons">
+        <button id="downloadBtn" class="btn btn-secondary"><i class="fa-solid fa-download"></i> Download</button>
+        <button id="copyBtn" class="btn btn-secondary"><i class="fa-solid fa-link"></i> Copy Link</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('wishForm');
+    const outputSection = document.getElementById('outputSection');
+    const qrContainer = document.getElementById('qrcode');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    let currentShareableUrl = '';
+
+    // Calculate Age helper
+    function calculateAge(dobString) {
+      const dob = new Date(dobString);
+      const diffMs = Date.now() - dob.getTime();
+      const ageDate = new Date(diffMs);
+      return Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const dob = document.getElementById('dob').value;
+      const message = document.getElementById('message').value.trim();
+      const image = document.getElementById('image').value.trim();
+
+      const age = calculateAge(dob);
+
+      // Determine absolute path to celebration.html on the current host
+      const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+      const targetPage = baseUrl + 'celebration.html';
+
+      // Build parameters URL
+      const params = new URLSearchParams();
+      params.append('name', name);
+      params.append('age', age);
+      params.append('msg', message);
+      if (image) params.append('img', image);
+
+      currentShareableUrl = `${targetPage}?${params.toString()}`;
+
+      // Clear previous QR code
+      qrContainer.innerHTML = '';
+
+      // Generate QR Code
+      new QRCode(qrContainer, {
+        text: currentShareableUrl,
+        width: 180,
+        height: 180,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // Show output section
+      outputSection.style.display = 'block';
+      outputSection.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Copy Link Action
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(currentShareableUrl).then(() => {
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
+        setTimeout(() => copyBtn.innerHTML = originalText, 2000);
+      });
+    });
+
+    // Download QR Code Action
+    downloadBtn.addEventListener('click', () => {
+      const qrImg = qrContainer.querySelector('img');
+      const qrCanvas = qrContainer.querySelector('canvas');
+
+      let imageSrc = '';
+      if (qrImg && qrImg.src) {
+        imageSrc = qrImg.src;
+      } else if (qrCanvas) {
+        imageSrc = qrCanvas.toDataURL('image/png');
+      }
+
+      if (imageSrc) {
+        const link = document.createElement('a');
+        link.href = imageSrc;
+        link.download = 'birthday-qr.png';
+        link.click();
+      }
+    });
+  </script>
+</body>
+</html>

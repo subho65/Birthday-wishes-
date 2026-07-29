@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday!</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --accent: #ff007f;
+      --accent-glow: #ff0055;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 20% 20%, rgba(138, 43, 226, 0.3) 0px, transparent 50%),
+        radial-gradient(at 80% 80%, rgba(255, 0, 128, 0.3) 0px, transparent 50%);
+      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* Floating Balloons Background Animation */
+    .balloon-container {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .balloon {
+      position: absolute;
+      bottom: -100px;
+      width: 40px;
+      height: 50px;
+      background: var(--accent);
+      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+      animation: floatUp 8s infinite ease-in;
+      opacity: 0.6;
+    }
+
+    .balloon::after {
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      left: 19px;
+      width: 2px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(-110vh) rotate(20deg); opacity: 0; }
+    }
+
+    /* Card Container */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      padding: 35px 25px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(255, 0, 127, 0.2);
+      animation: cardAppear 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes cardAppear {
+      from { opacity: 0; transform: scale(0.8) translateY(30px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Profile Image Container */
+    .profile-wrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 20px;
+    }
+
+    .profile-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid #ffffff;
+      box-shadow: 0 0 25px var(--accent-glow);
+    }
+
+    /* Bouncing Glowing Title */
+    .title {
+      font-family: 'Fredoka', cursive;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 15px;
+      background: linear-gradient(45deg, #ff71ce, #01cdfe, #05ffa1, #b967ff);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbowGradient 4s ease infinite, bounce 2s ease infinite;
+    }
+
+    @keyframes rainbowGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Personalized Message */
+    .message {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(0, 0, 0, 0.25);
+      padding: 18px;
+      border-radius: 16px;
+      border-left: 4px solid var(--accent);
+      margin-top: 15px;
+      word-wrap: break-word;
+    }
+
+    /* Music Floating Audio Toggle Button */
+    .music-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+      background: linear-gradient(135deg, #ff007f, #7928ca);
+      border: none;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Background Balloons -->
+  <div class="balloon-container" id="balloonContainer"></div>
+
+  <!-- Main Celebration Card -->
+  <div class="card">
+    <div class="profile-wrapper" id="imgWrapper">
+      <img id="personImg" class="profile-img" src="" alt="Birthday Person">
+    </div>
+
+    <h1 id="greetingTitle" class="title">Happy Birthday!</h1>
+
+    <div id="messageBox" class="message">
+      Wishing you a fantastic day filled with joy and laughter!
+    </div>
+  </div>
+
+  <!-- Music Button & Audio Tag -->
+  <button id="musicToggle" class="music-btn" title="Toggle Music">
+    <i class="fa-solid fa-music"></i>
+  </button>
+  
+  <!-- Custom Audio File (Replace SRC with your preferred mp3 link if desired) -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a731ef.mp3?filename=happy-birthday-15222.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // --- Parse Query Parameters ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name') || 'Friend';
+    const age = urlParams.get('age');
+    const msg = urlParams.get('msg') || 'Wishing you all the happiness in the world on your special day!';
+    const imgUrl = urlParams.get('img');
+
+    // --- Dynamic DOM Injection ---
+    const greetingTitle = document.getElementById('greetingTitle');
+    const messageBox = document.getElementById('messageBox');
+    const personImg = document.getElementById('personImg');
+    const imgWrapper = document.getElementById('imgWrapper');
+
+    // Format Age text (e.g. 25th)
+    function getOrdinalSuffix(i) {
+      const j = i % 10, k = i % 100;
+      if (j === 1 && k !== 11) return i + "st";
+      if (j === 2 && k !== 12) return i + "nd";
+      if (j === 3 && k !== 13) return i + "rd";
+      return i + "th";
+    }
+
+    const ageFormatted = age ? `${getOrdinalSuffix(age)} ` : '';
+    greetingTitle.textContent = `Happy ${ageFormatted}Birthday, ${name}!`;
+    messageBox.textContent = msg;
+
+    // Default Fallback Image if user didn't supply one
+    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ff007f&color=fff&size=200`;
+    personImg.src = imgUrl && imgUrl.trim() !== '' ? imgUrl : defaultAvatar;
+
+    personImg.onerror = function() {
+      this.src = defaultAvatar; // fallback if image URL is broken
+    };
+
+    // --- Dynamic Balloon Generator ---
+    const balloonContainer = document.getElementById('balloonContainer');
+    const colors = ['#ff007f', '#7928ca', '#00dfa2', '#ffb800', '#0079ff'];
+
+    for (let i = 0; i < 15; i++) {
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      balloon.style.left = `${Math.random() * 100}%`;
+      balloon.style.animationDelay = `${Math.random() * 5}s`;
+      balloon.style.animationDuration = `${6 + Math.random() * 4}s`;
+      balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      balloonContainer.appendChild(balloon);
+    }
+
+    // --- Confetti Explosion Effect ---
+    function triggerConfetti() {
+      const count = 200;
+      const defaults = { origin: { y: 0.7 } };
+
+      function fire(particleRatio, opts) {
+        confetti(Object.assign({}, defaults, opts, {
+          particleCount: Math.floor(count * particleRatio)
+        }));
+      }
+
+      fire(0.25, { spread: 26, startVelocity: 55 });
+      fire(0.2, { spread: 60 });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+      fire(0.1, { spread: 120, startVelocity: 45 });
+    }
+
+    // Trigger confetti burst on load
+    window.addEventListener('load', () => {
+      triggerConfetti();
+      // Optional second burst after 1.5 seconds
+      setTimeout(triggerConfetti, 1500);
+    });
+
+    // --- Audio Control Logic ---
+    const audio = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicToggle');
+    let isPlaying = false;
+
+    musicBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        audio.pause();
+        musicBtn.innerHTML = `<i class="fa-solid fa-music"></i>`;
+      } else {
+        audio.play().catch(() => {}); // handle browser policy safely
+        musicBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+      }
+      isPlaying = !isPlaying;
+    });
+
+    // Attempt auto-play on first user touch/interaction if allowed
+    document.body.addEventListener('click', () => {
+      if (!isPlaying) {
+        audio.play().then(() => {
+          isPlaying = true;
+          musicBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+        }).catch(() => {
+          // Silent catch for autoplay block policy
+        });
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>
